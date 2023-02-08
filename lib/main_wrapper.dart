@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'screens/favorites.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 // void main() {
 //   runApp(MyApp());
@@ -93,13 +94,17 @@ class _MyHomePageState extends State<MyHomePage> {
                     label: Text('Favorites'),
                   ),
                   NavigationRailDestination(
-                    icon: Icon(Icons.account_box_outlined),
-                    label: Text('Account'),
+                    icon: Icon(Icons.camera_alt),
+                    label: Text('Images'),
                   ),
                   NavigationRailDestination(
                     icon: Icon(Icons.account_box_outlined),
-                    label: Text('Login'),
+                    label: Text('Account'),
                   ),
+                  // NavigationRailDestination(
+                  //   icon: Icon(Icons.home),
+                  //   label: Text('Submit Prompt'),
+                  // ),
                 ],
                 selectedIndex: selectedIndex,
                 onDestinationSelected: (value) {
@@ -325,10 +330,12 @@ class _ImageUploadPageState extends State<ImageUploadPage> {
   List<File> _imageFiles = [];
 
   void _pickImage(ImageSource source) async {
-    File selected = await ImagePicker.pickImage(source: source);
-    if (selected != null) {
+    var imagePicker = ImagePicker();
+    var imageFile =
+        await imagePicker.pickImage(source: ImageSource.camera) as File;
+    if (imageFile != null) {
       setState(() {
-        _imageFiles.add(selected);
+        _imageFiles.add(imageFile);
       });
     }
   }
@@ -377,9 +384,9 @@ class _ImageUploadPageState extends State<ImageUploadPage> {
           if (_imageFiles.length >= 15) {
             _submitImages();
           } else {
-            Scaffold.of(context).showSnackBar(
-              SnackBar(
-                content: Text("Please select at least 15 images"),
+            Scaffold.of(context).showBottomSheet(
+              (context) => Container(
+                child: Text("Please select at least 15 images"),
               ),
             );
           }
