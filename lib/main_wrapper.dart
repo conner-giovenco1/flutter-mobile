@@ -2,6 +2,8 @@ import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'screens/favorites.dart';
+import 'dart:io';
+import 'package:flutter/material.dart';
 
 // void main() {
 //   runApp(MyApp());
@@ -64,6 +66,12 @@ class _MyHomePageState extends State<MyHomePage> {
       case 1:
         page = FavoritesPage();
         break;
+      case 2:
+        page = ImageUploadPage();
+        break;
+      case 3:
+        page = LoginPage();
+        break;
       default:
         throw UnimplementedError('no widget for $selectedIndex');
     }
@@ -83,6 +91,14 @@ class _MyHomePageState extends State<MyHomePage> {
                   NavigationRailDestination(
                     icon: Icon(Icons.favorite),
                     label: Text('Favorites'),
+                  ),
+                  NavigationRailDestination(
+                    icon: Icon(Icons.account_box_outlined),
+                    label: Text('Account'),
+                  ),
+                  NavigationRailDestination(
+                    icon: Icon(Icons.account_box_outlined),
+                    label: Text('Login'),
                   ),
                 ],
                 selectedIndex: selectedIndex,
@@ -203,6 +219,173 @@ class FavoritesPage extends StatelessWidget {
             title: Text(pair.asLowerCase),
           ),
       ],
+    );
+  }
+}
+
+class AccountPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    var appState = context.watch<MyAppState>();
+
+    if (appState.favorites.isEmpty) {
+      return Center(
+        child: Text('No favorites yet.'),
+      );
+    }
+
+    return ListView(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(20),
+          child: Text('You have '
+              '${appState.favorites.length} favorites:'),
+        ),
+        for (var pair in appState.favorites)
+          ListTile(
+            leading: Icon(Icons.favorite),
+            title: Text(pair.asLowerCase),
+          ),
+      ],
+    );
+  }
+}
+
+class LoginPage extends StatefulWidget {
+  @override
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  final _formKey = GlobalKey<FormState>();
+  String _email = "";
+  String _password = "";
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Form(
+        key: _formKey,
+        child: Column(
+          children: [
+            Container(
+              padding: EdgeInsets.all(20),
+              child: TextFormField(
+                validator: (input) {
+                  if (input?.isEmpty == true) {
+                    return 'Please enter an email';
+                  }
+                  return null;
+                },
+                onSaved: (input) => _email = input ?? "",
+                decoration: InputDecoration(labelText: 'Email'),
+              ),
+            ),
+            Container(
+              padding: EdgeInsets.all(20),
+              child: TextFormField(
+                validator: (input) {
+                  if (input == null || input.length < 6) {
+                    return 'Your password needs to be at least 6 characters';
+                  }
+                  return null;
+                },
+                onSaved: (input) => _password = input ?? '',
+                decoration: InputDecoration(labelText: 'Password'),
+                obscureText: true,
+              ),
+            ),
+            Container(
+              padding: EdgeInsets.all(20),
+              child: ElevatedButton(
+                onPressed: () {
+                  if (_formKey.currentState?.validate() == true) {
+                    _formKey.currentState?.save();
+                    print(_email);
+                    print(_password);
+                    // Perform authentication here
+                  }
+                },
+                child: Text('Login'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class ImageUploadPage extends StatefulWidget {
+  @override
+  _ImageUploadPageState createState() => _ImageUploadPageState();
+}
+
+class _ImageUploadPageState extends State<ImageUploadPage> {
+  List<File> _imageFiles = [];
+
+  void _pickImage(ImageSource source) async {
+    File selected = await ImagePicker.pickImage(source: source);
+    if (selected != null) {
+      setState(() {
+        _imageFiles.add(selected);
+      });
+    }
+  }
+
+  void _submitImages() {
+    // submit the images to a remote server or API
+    // ...
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Image Upload"),
+      ),
+      body: Column(
+        children: <Widget>[
+          Expanded(
+            child: GridView.count(
+              crossAxisCount: 3,
+              children: List.generate(
+                _imageFiles.length,
+                (index) {
+                  return Image.file(_imageFiles[index]);
+                },
+              ),
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              IconButton(
+                icon: Icon(Icons.image),
+                onPressed: () => _pickImage(ImageSource.gallery),
+              ),
+              IconButton(
+                icon: Icon(Icons.camera_alt),
+                onPressed: () => _pickImage(ImageSource.camera),
+              ),
+            ],
+          ),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          if (_imageFiles.length >= 15) {
+            _submitImages();
+          } else {
+            Scaffold.of(context).showSnackBar(
+              SnackBar(
+                content: Text("Please select at least 15 images"),
+              ),
+            );
+          }
+        },
+        child: Icon(Icons.send),
+      ),
     );
   }
 }
