@@ -5,6 +5,8 @@ import 'screens/favorites.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'dart:math';
+import 'package:flutter/material.dart';
 
 // void main() {
 //   runApp(MyApp());
@@ -73,6 +75,9 @@ class _MyHomePageState extends State<MyHomePage> {
       case 3:
         page = LoginPage();
         break;
+      case 4:
+        page = RandomWordGenerator();
+        break;
       default:
         throw UnimplementedError('no widget for $selectedIndex');
     }
@@ -101,10 +106,10 @@ class _MyHomePageState extends State<MyHomePage> {
                     icon: Icon(Icons.account_box_outlined),
                     label: Text('Account'),
                   ),
-                  // NavigationRailDestination(
-                  //   icon: Icon(Icons.home),
-                  //   label: Text('Submit Prompt'),
-                  // ),
+                  NavigationRailDestination(
+                    icon: Icon(Icons.home),
+                    label: Text('Submit Prompt'),
+                  ),
                 ],
                 selectedIndex: selectedIndex,
                 onDestinationSelected: (value) {
@@ -393,6 +398,57 @@ class _ImageUploadPageState extends State<ImageUploadPage> {
         },
         child: Icon(Icons.send),
       ),
+    );
+  }
+}
+
+class RandomWordGenerator extends StatefulWidget {
+  @override
+  _RandomWordGeneratorState createState() => _RandomWordGeneratorState();
+}
+
+class _RandomWordGeneratorState extends State<RandomWordGenerator> {
+  final _words = [
+    'apple',
+    'banana',
+    'cherry',
+    'date',
+    'elderberry',
+    'fig',
+    'grape',
+    'honeydew',
+    'kiwi',
+    'lemon',
+    'mango',
+  ];
+  final _textController = TextEditingController();
+  String _generatedWord = '';
+  void _generateWord() {
+    setState(() {
+      _generatedWord = _textController.text.isNotEmpty
+          ? _textController.text
+          : _words[Random().nextInt(_words.length)];
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text('Generated Word: $_generatedWord'),
+        TextField(
+          controller: _textController,
+          decoration: InputDecoration(
+            hintText: 'Enter a prompt',
+          ),
+        ),
+        SizedBox(height: 20),
+        ElevatedButton(
+          child: Text('Submit prompt'),
+          onPressed: _generateWord,
+        ),
+      ],
     );
   }
 }
