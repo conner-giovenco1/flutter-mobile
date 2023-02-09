@@ -554,9 +554,9 @@ class _LoginPageState extends State<LoginPage> {
       onLogin: _login,
       onSignup: _register,
       // onSubmitAnimationCompleted: () {
-      //   Navigator.of(context).pushReplacement(MaterialPageRoute(
-      //     builder: (context) => HomePage(),
-      //   ));
+      //   // Navigator.of(context).pushReplacement(MaterialPageRoute(
+      //   //   builder: (context) => HomePage(),
+      //   // ));
       // },
       onRecoverPassword: (String _) => Future.value(null),
       messages: LoginMessages(
@@ -567,3 +567,80 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 }
+
+// class LoginPage extends StatefulWidget {
+//   @override
+//   _LoginPageState createState() => _LoginPageState();
+// }
+
+// class _LoginPageState extends State<LoginPage> {
+//   GoogleSignIn _googleSignIn = GoogleSignIn(
+//       scopes: ['email'],
+//       clientId:
+//           '552669576534-qho7ia2gdo64nsulf4lr1pg34dvfl6pj.apps.googleusercontent.com');
+//   GoogleSignInAccount? _currentUser;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount? account) {
+//       setState(() {
+//         _currentUser = account;
+//       });
+//     });
+//     _googleSignIn.signInSilently();
+//   }
+
+//   Future<void> _handleSignIn() async {
+//     try {
+//       await _googleSignIn.signIn();
+//     } catch (error) {
+//       print(error);
+//     }
+//   }
+
+//   Future<void> _handleSignOut() async {
+//     _googleSignIn.disconnect();
+//   }
+
+//   Widget _buildBody() {
+//     if (_currentUser != null) {
+//       return Column(
+//         mainAxisAlignment: MainAxisAlignment.center,
+//         children: <Widget>[
+//           ListTile(
+//             leading: GoogleUserCircleAvatar(
+//               identity: _currentUser! as GoogleIdentity,
+//             ),
+//             title: Text(_currentUser?.displayName ?? ''),
+//             subtitle: Text(_currentUser?.email ?? ''),
+//           ),
+//           ElevatedButton(
+//             child: Text('Sign out'),
+//             onPressed: _handleSignOut,
+//           ),
+//         ],
+//       );
+//     } else {
+//       return Column(
+//         mainAxisAlignment: MainAxisAlignment.center,
+//         children: <Widget>[
+//           ElevatedButton(
+//             child: Text('Sign in with Google'),
+//             onPressed: _handleSignIn,
+//           ),
+//         ],
+//       );
+//     }
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text('Google Sign In Example'),
+//       ),
+//       body: _buildBody(),
+//     );
+//   }
+// }
