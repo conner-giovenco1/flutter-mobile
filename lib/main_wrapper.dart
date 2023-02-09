@@ -1,12 +1,13 @@
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'screens/favorites.dart';
 import 'dart:io';
-import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:math';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_login/flutter_login.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 // void main() {
 //   runApp(MyApp());
@@ -78,6 +79,9 @@ class _MyHomePageState extends State<MyHomePage> {
       case 4:
         page = RandomWordGenerator();
         break;
+      // case 5:
+      //   page = LoginScreen();
+      //   break;
       default:
         throw UnimplementedError('no widget for $selectedIndex');
     }
@@ -110,6 +114,11 @@ class _MyHomePageState extends State<MyHomePage> {
                     icon: Icon(Icons.home),
                     label: Text('Submit Prompt'),
                   ),
+                  // NavigationRailDestination(
+                  //   icon: Icon(Icons.pool),
+                  //   label: Text('Submit Prompt'),
+                  //   pooopoo
+                  // ),
                 ],
                 selectedIndex: selectedIndex,
                 onDestinationSelected: (value) {
@@ -261,70 +270,70 @@ class AccountPage extends StatelessWidget {
   }
 }
 
-class LoginPage extends StatefulWidget {
-  @override
-  _LoginPageState createState() => _LoginPageState();
-}
+// class LoginPage extends StatefulWidget {
+//   @override
+//   _LoginPageState createState() => _LoginPageState();
+// }
 
-class _LoginPageState extends State<LoginPage> {
-  final _formKey = GlobalKey<FormState>();
-  String _email = "";
-  String _password = "";
+// class _LoginPageState extends State<LoginPage> {
+//   final _formKey = GlobalKey<FormState>();
+//   String _email = "";
+//   String _password = "";
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Form(
-        key: _formKey,
-        child: Column(
-          children: [
-            Container(
-              padding: EdgeInsets.all(20),
-              child: TextFormField(
-                validator: (input) {
-                  if (input?.isEmpty == true) {
-                    return 'Please enter an email';
-                  }
-                  return null;
-                },
-                onSaved: (input) => _email = input ?? "",
-                decoration: InputDecoration(labelText: 'Email'),
-              ),
-            ),
-            Container(
-              padding: EdgeInsets.all(20),
-              child: TextFormField(
-                validator: (input) {
-                  if (input == null || input.length < 6) {
-                    return 'Your password needs to be at least 6 characters';
-                  }
-                  return null;
-                },
-                onSaved: (input) => _password = input ?? '',
-                decoration: InputDecoration(labelText: 'Password'),
-                obscureText: true,
-              ),
-            ),
-            Container(
-              padding: EdgeInsets.all(20),
-              child: ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState?.validate() == true) {
-                    _formKey.currentState?.save();
-                    print(_email);
-                    print(_password);
-                    // Perform authentication here
-                  }
-                },
-                child: Text('Login'),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       body: Form(
+//         key: _formKey,
+//         child: Column(
+//           children: [
+//             Container(
+//               padding: EdgeInsets.all(20),
+//               child: TextFormField(
+//                 validator: (input) {
+//                   if (input?.isEmpty == true) {
+//                     return 'Please enter an email';
+//                   }
+//                   return null;
+//                 },
+//                 onSaved: (input) => _email = input ?? "",
+//                 decoration: InputDecoration(labelText: 'Email'),
+//               ),
+//             ),
+//             Container(
+//               padding: EdgeInsets.all(20),
+//               child: TextFormField(
+//                 validator: (input) {
+//                   if (input == null || input.length < 6) {
+//                     return 'Your password needs to be at least 6 characters';
+//                   }
+//                   return null;
+//                 },
+//                 onSaved: (input) => _password = input ?? '',
+//                 decoration: InputDecoration(labelText: 'Password'),
+//                 obscureText: true,
+//               ),
+//             ),
+//             Container(
+//               padding: EdgeInsets.all(20),
+//               child: ElevatedButton(
+//                 onPressed: () {
+//                   if (_formKey.currentState?.validate() == true) {
+//                     _formKey.currentState?.save();
+//                     print(_email);
+//                     print(_password);
+//                     // Perform authentication here
+//                   }
+//                 },
+//                 child: Text('Login'),
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
 
 class ImageUploadPage extends StatefulWidget {
   @override
@@ -449,6 +458,112 @@ class _RandomWordGeneratorState extends State<RandomWordGenerator> {
           onPressed: _generateWord,
         ),
       ],
+    );
+  }
+}
+
+// class LoginScreen extends StatefulWidget {
+//   @override
+//   _LoginScreenState createState() => _LoginScreenState();
+// }
+
+// class _LoginScreenState extends State<LoginScreen> {
+//   final GoogleSignIn _googleSignIn = GoogleSignIn();
+
+//   Future<void> _handleSignIn() async {
+//     try {
+//       await _googleSignIn.signIn();
+//     } catch (error) {
+//       print(error);
+//     }
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       body: Container(
+//         padding: EdgeInsets.all(20),
+//         child: Column(
+//           mainAxisAlignment: MainAxisAlignment.center,
+//           children: [
+//             Text(
+//               'Sign in with Google',
+//               style: TextStyle(fontSize: 20),
+//             ),
+//             SizedBox(height: 20),
+//             GoogleSignInButton(
+//               onPressed: _handleSignIn,
+//               darkMode: true, // default: false
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+class LoginPage extends StatefulWidget {
+  @override
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  GoogleSignIn _googleSignIn = GoogleSignIn(
+      scopes: ['email'],
+      clientId:
+          '552669576534-qho7ia2gdo64nsulf4lr1pg34dvfl6pj.apps.googleusercontent.com');
+
+  Future<String> _login(LoginData data) async {
+    final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+
+    if (googleUser != null) {
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+
+      // Use the authentication tokens to log in to your own backend
+      // ...
+
+      // Replace this with your own logic to handle a successful login
+      return 'Login successful';
+    } else {
+      return 'Login failed';
+    }
+  }
+
+  Future<String> _register(SignupData data) async {
+    final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+
+    if (googleUser != null) {
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+
+      // Use the authentication tokens to log in to your own backend
+      // ...
+
+      // Replace this with your own logic to handle a successful registration
+      return 'Registration successful';
+    } else {
+      return 'Registration failed';
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FlutterLogin(
+      title: 'Login Page',
+      onLogin: _login,
+      onSignup: _register,
+      // onSubmitAnimationCompleted: () {
+      //   Navigator.of(context).pushReplacement(MaterialPageRoute(
+      //     builder: (context) => HomePage(),
+      //   ));
+      // },
+      onRecoverPassword: (String _) => Future.value(null),
+      messages: LoginMessages(
+        signupButton: 'Sign Up',
+        loginButton: 'Sign In with Google',
+        forgotPasswordButton: 'Forgot Password',
+      ),
     );
   }
 }
