@@ -9,6 +9,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_login/flutter_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:image_cropper/image_cropper.dart';
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 // void main() {
 //   runApp(MyApp());
@@ -78,7 +81,7 @@ class _MyHomePageState extends State<MyHomePage> {
         page = LoginPage();
         break;
       case 4:
-        page = RandomWordGenerator();
+        page = InputWordGenerator();
         break;
       // case 5:
       //   page = LoginScreen();
@@ -355,6 +358,8 @@ class _ImageUploadPageState extends State<ImageUploadPage> {
         maxWidth: 512,
         maxHeight: 512,
       );
+      //resize
+
       if (croppedImage != null) {
         setState(() {
           _imageFiles.add(File(croppedImage.path));
@@ -487,33 +492,30 @@ class _ImageUploadPageState extends State<ImageUploadPage> {
 //   }
 // }
 
-class RandomWordGenerator extends StatefulWidget {
+class InputWordGenerator extends StatefulWidget {
   @override
-  _RandomWordGeneratorState createState() => _RandomWordGeneratorState();
+  _InputWordGeneratorState createState() => _InputWordGeneratorState();
 }
 
-class _RandomWordGeneratorState extends State<RandomWordGenerator> {
-  final _words = [
-    'apple',
-    'banana',
-    'cherry',
-    'date',
-    'elderberry',
-    'fig',
-    'grape',
-    'honeydew',
-    'kiwi',
-    'lemon',
-    'mango',
-  ];
+class _InputWordGeneratorState extends State<InputWordGenerator> {
   final _textController = TextEditingController();
   String _generatedWord = '';
-  void _generateWord() {
+  void _generateWord() async {
     setState(() {
-      _generatedWord = _textController.text.isNotEmpty
-          ? _textController.text
-          : _words[Random().nextInt(_words.length)];
+      _generatedWord = _textController.text;
     });
+
+    final response = await http.post(
+        Uri.parse(
+            'https://nktvnrvvoh.execute-api.us-east-1.amazonaws.com/default'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({"user_id": 1, 'prompt': _generatedWord}));
+    print(json.encode({"user_id": 1, 'prompt': _generatedWord}));
+    if (response.statusCode == 200) {
+      print('Successfully sent the prompt to the API!');
+    } else {
+      print('Failed to send the prompt to the API. Response: ${response.body}');
+    }
   }
 
   @override
