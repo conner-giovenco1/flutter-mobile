@@ -8,6 +8,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_login/flutter_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:image_cropper/image_cropper.dart';
 
 // void main() {
 //   runApp(MyApp());
@@ -345,12 +346,20 @@ class _ImageUploadPageState extends State<ImageUploadPage> {
 
   void _pickImage(ImageSource source) async {
     var imagePicker = ImagePicker();
-    var imageFile =
-        await imagePicker.pickImage(source: ImageSource.camera) as File;
+    var imageFile = await imagePicker.pickImage(source: source);
     if (imageFile != null) {
-      setState(() {
-        _imageFiles.add(imageFile);
-      });
+      var imageCropper = ImageCropper();
+      var croppedImage = await imageCropper.cropImage(
+        sourcePath: imageFile.path,
+        aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1),
+        maxWidth: 512,
+        maxHeight: 512,
+      );
+      if (croppedImage != null) {
+        setState(() {
+          _imageFiles.add(File(croppedImage.path));
+        });
+      }
     }
   }
 
@@ -358,6 +367,8 @@ class _ImageUploadPageState extends State<ImageUploadPage> {
     // submit the images to a remote server or API
     // ...
   }
+
+  String _customName = '';
 
   @override
   Widget build(BuildContext context) {
@@ -378,19 +389,33 @@ class _ImageUploadPageState extends State<ImageUploadPage> {
               ),
             ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: <Widget>[
-              IconButton(
-                icon: Icon(Icons.image),
-                onPressed: () => _pickImage(ImageSource.gallery),
-              ),
-              IconButton(
-                icon: Icon(Icons.camera_alt),
-                onPressed: () => _pickImage(ImageSource.camera),
-              ),
-            ],
-          ),
+          _imageFiles.length < 15
+              ? Container(
+                  child: TextField(
+                    decoration: InputDecoration(
+                      hintText: "Add images",
+                      suffixIcon: IconButton(
+                        icon: Icon(Icons.image),
+                        onPressed: () => _pickImage(ImageSource.gallery),
+                      ),
+                    ),
+                  ),
+                )
+              : Container(),
+          _imageFiles.length >= 15
+              ? Container(
+                  child: TextField(
+                    decoration: InputDecoration(
+                      hintText: "Enter custom name",
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        _customName = value;
+                      });
+                    },
+                  ),
+                )
+              : Container(),
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -410,6 +435,57 @@ class _ImageUploadPageState extends State<ImageUploadPage> {
     );
   }
 }
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text("Image Upload"),
+//       ),
+//       body: Column(
+//         children: <Widget>[
+//           Expanded(
+//             child: GridView.count(
+//               crossAxisCount: 3,
+//               children: List.generate(
+//                 _imageFiles.length,
+//                 (index) {
+//                   return Image.file(_imageFiles[index]);
+//                 },
+//               ),
+//             ),
+//           ),
+//           Row(
+//             mainAxisAlignment: MainAxisAlignment.spaceAround,
+//             children: <Widget>[
+//               IconButton(
+//                 icon: Icon(Icons.image),
+//                 onPressed: () => _pickImage(ImageSource.gallery),
+//               ),
+//               IconButton(
+//                 icon: Icon(Icons.camera_alt),
+//                 onPressed: () => _pickImage(ImageSource.camera),
+//               ),
+//             ],
+//           ),
+//         ],
+//       ),
+//       floatingActionButton: FloatingActionButton(
+//         onPressed: () {
+//           if (_imageFiles.length >= 15) {
+//             _submitImages();
+//           } else {
+//             Scaffold.of(context).showBottomSheet(
+//               (context) => Container(
+//                 child: Text("Please select at least 15 images"),
+//               ),
+//             );
+//           }
+//         },
+//         child: Icon(Icons.send),
+//       ),
+//     );
+//   }
+// }
 
 class RandomWordGenerator extends StatefulWidget {
   @override
