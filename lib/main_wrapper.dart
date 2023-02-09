@@ -504,13 +504,23 @@ class _InputWordGeneratorState extends State<InputWordGenerator> {
     setState(() {
       _generatedWord = _textController.text;
     });
-
+// have to replace the user id
     final response = await http.post(
         Uri.parse(
             'https://nktvnrvvoh.execute-api.us-east-1.amazonaws.com/default'),
         headers: {'Content-Type': 'application/json'},
-        body: json.encode({"user_id": 1, 'prompt': _generatedWord}));
-    print(json.encode({"user_id": 1, 'prompt': _generatedWord}));
+        body: json.encode({
+          "bucketPath": "bucketPath",
+          "user_id": 1,
+          'prompt': _generatedWord,
+          "numFiles": 1
+        }));
+    print(json.encode({
+      "bucketPath": "bucketPath",
+      "user_id": 1,
+      'prompt': _generatedWord,
+      "numFiles": 1
+    }));
     if (response.statusCode == 200) {
       print('Successfully sent the prompt to the API!');
     } else {
