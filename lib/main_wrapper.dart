@@ -12,6 +12,12 @@ import 'package:image_cropper/image_cropper.dart';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:aws_sdk/aws_sdk.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'dart:typed_data';
+import 'package:aws_s3_upload/aws_s3_upload.dart';
+
+// import 'package:aws_sdk_dart_v2/aws_sdk_dart_v2.dart';
 
 // void main() {
 //   runApp(MyApp());
@@ -346,6 +352,7 @@ class ImageUploadPage extends StatefulWidget {
 
 class _ImageUploadPageState extends State<ImageUploadPage> {
   List<File> _imageFiles = [];
+  String _customName = '';
 
   void _pickImage(ImageSource source) async {
     var imagePicker = ImagePicker();
@@ -358,7 +365,6 @@ class _ImageUploadPageState extends State<ImageUploadPage> {
         maxWidth: 512,
         maxHeight: 512,
       );
-      //resize
 
       if (croppedImage != null) {
         setState(() {
@@ -368,12 +374,29 @@ class _ImageUploadPageState extends State<ImageUploadPage> {
     }
   }
 
-  void _submitImages() {
-    // submit the images to a remote server or API
-    // ...
+  void _submitImages() async {
+    String folderName = "user_" + DateTime.now().toIso8601String();
+    print(_imageFiles.length);
+    for (var i = 0; i < _imageFiles.length; i++) {
+      String fileName = i.toString() + ".jpg";
+      if (_customName.isNotEmpty) {
+        fileName = _customName + "_" + fileName;
+      }
+      try {
+        AwsS3.uploadFile(
+          accessKey: "AKIAWW2WIGWIEZ6PEN4U",
+          secretKey: "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",
+          file: _imageFiles[i],
+          bucket: "test-image-bucket-2-diffusion",
+          region: "us-east-1",
+          key: folderName + "/" + fileName,
+        );
+      } catch (e) {
+        print("Exception: $e");
+      }
+    }
+    print("successful s3 upload");
   }
-
-  String _customName = '';
 
   @override
   Widget build(BuildContext context) {
@@ -394,7 +417,7 @@ class _ImageUploadPageState extends State<ImageUploadPage> {
               ),
             ),
           ),
-          _imageFiles.length < 15
+          _imageFiles.length < 2
               ? Container(
                   child: TextField(
                     decoration: InputDecoration(
@@ -407,7 +430,7 @@ class _ImageUploadPageState extends State<ImageUploadPage> {
                   ),
                 )
               : Container(),
-          _imageFiles.length >= 15
+          _imageFiles.length >= 2
               ? Container(
                   child: TextField(
                     decoration: InputDecoration(
@@ -425,12 +448,12 @@ class _ImageUploadPageState extends State<ImageUploadPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          if (_imageFiles.length >= 15) {
+          if (_imageFiles.length >= 2) {
             _submitImages();
           } else {
             Scaffold.of(context).showBottomSheet(
               (context) => Container(
-                child: Text("Please select at least 15 images"),
+                child: Text("Please select at least 2 images"),
               ),
             );
           }
