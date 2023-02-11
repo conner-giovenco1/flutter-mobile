@@ -1,5 +1,6 @@
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:provider/provider.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
@@ -16,6 +17,12 @@ import 'package:aws_sdk/aws_sdk.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'dart:typed_data';
 import 'package:aws_s3_upload/aws_s3_upload.dart';
+import 'dart:io';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:flutter/widgets.dart';
+import 'dart:convert';
+import 'dart:io';
 
 // import 'package:aws_sdk_dart_v2/aws_sdk_dart_v2.dart';
 
@@ -375,27 +382,25 @@ class _ImageUploadPageState extends State<ImageUploadPage> {
   }
 
   void _submitImages() async {
-    String folderName = "user_" + DateTime.now().toIso8601String();
-    print(_imageFiles.length);
-    for (var i = 0; i < _imageFiles.length; i++) {
-      String fileName = i.toString() + ".jpg";
-      if (_customName.isNotEmpty) {
-        fileName = _customName + "_" + fileName;
-      }
-      try {
-        AwsS3.uploadFile(
-          accessKey: "AKIAWW2WIGWIEZ6PEN4U",
-          secretKey: "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",
-          file: _imageFiles[i],
-          bucket: "test-image-bucket-2-diffusion",
-          region: "us-east-1",
-          key: folderName + "/" + fileName,
-        );
-      } catch (e) {
-        print("Exception: $e");
-      }
+    String endpoint =
+        "https://adkfh17ke7.execute-api.us-east-1.amazonaws.com/v1/test-image-bucket-2-diffusion";
+
+    for (int i = 0; i < _imageFiles.length; i++) {
+      String filename = "$_customName${i + 1}.jpeg";
+      String url = endpoint + '/' + filename;
+
+      var request = http.Request('PUT', Uri.parse(url));
+      request.headers['Content-Type'] = 'image';
+      request.bodyBytes = _imageFiles[i].readAsBytesSync();
+      request.send().then((response) {
+        print(response.statusCode);
+        if (response.statusCode == 200) {
+          print("Image uploaded successfully");
+        } else {
+          print("Upload failed");
+        }
+      });
     }
-    print("successful s3 upload");
   }
 
   @override
